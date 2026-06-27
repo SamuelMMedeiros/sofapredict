@@ -7,6 +7,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import PublicHome from "./pages/PublicHome";
 import Dashboard from "./pages/Dashboard";
 import LgpdConsent from "./pages/LgpdConsent";
+import AdminFeatureBlocks from "./pages/AdminFeatureBlocks";
 
 function Router() {
   return (
@@ -14,6 +15,7 @@ function Router() {
       <Route path="/" component={PublicHome} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/lgpd-consent" component={LgpdConsent} />
+      <Route path="/admin/feature-blocks" component={AdminFeatureBlocks} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
