@@ -64,7 +64,7 @@ export default function PublicHome() {
         </div>
 
         <div className="flex flex-col md:flex-row gap-4 justify-center pt-4">
-          <Link href="/dashboard">
+          <Link href="/explore">
             <Button className="bg-[#10b981] hover:bg-[#059669] text-white px-8 py-6 text-lg">
               Explorar Grátis <ArrowRight className="ml-2" size={20} />
             </Button>

@@ -5,6 +5,7 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import PublicHome from "./pages/PublicHome";
+import PublicDashboard from "./pages/PublicDashboard";
 import Dashboard from "./pages/Dashboard";
 import LgpdConsent from "./pages/LgpdConsent";
 import AdminFeatureBlocks from "./pages/AdminFeatureBlocks";
@@ -13,6 +14,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={PublicHome} />
+      <Route path="/explore" component={PublicDashboard} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/lgpd-consent" component={LgpdConsent} />
       <Route path="/admin/feature-blocks" component={AdminFeatureBlocks} />
