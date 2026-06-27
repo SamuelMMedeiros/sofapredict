@@ -4,15 +4,17 @@ import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import PublicHome from "./pages/PublicHome";
 import Dashboard from "./pages/Dashboard";
 import LgpdConsent from "./pages/LgpdConsent";
 
 function Router() {
   return (
     <Switch>
-      <Route path={"/"} component={Dashboard} />
-      <Route path={"/lgpd-consent"} component={LgpdConsent} />
-      <Route path={"/404"} component={NotFound} />
+      <Route path="/" component={PublicHome} />
+      <Route path="/dashboard" component={Dashboard} />
+      <Route path="/lgpd-consent" component={LgpdConsent} />
+      <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
   );

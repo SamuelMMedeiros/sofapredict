@@ -93,3 +93,39 @@
 - [x] Dark/OLED mode toggle
 - [x] Sound alerts toggle
 - [x] Basic unit tests for cache
+
+
+## Phase 3 - Payment System & Monetization
+- [x] Create feature blocks schema for granular permission control
+- [x] Implement subscription plans (Free, Pro, Premium)
+- [x] Setup payment gateway integration (Pix, Stripe, PayPal, Telegram Stars)
+- [x] Create webhook handlers for automatic payment verification
+- [x] Implement trial subscription management (14 days free)
+- [x] Create feature access control service
+- [x] Setup admin panel for managing subscription plans
+- [x] Create pricing page for users
+- [x] Implement usage limit tracking per plan
+- [x] Create guest access logging system
+
+## Phase 4 - Public Landing Page & Deployment
+- [x] Create public landing page (home for all resources)
+- [x] Make login optional (only for paid plans)
+- [x] Implement betting history page (for authenticated users)
+- [x] Update routing: Home → Dashboard → History
+- [x] Create netlify.toml configuration
+- [x] Write comprehensive Netlify deployment guide
+- [x] Setup environment variables documentation
+- [x] Configure webhook endpoints for payments
+- [x] Implement automatic payment verification flow
+
+## Final Deliverables
+- [x] Complete feature blocks system with usage limits
+- [x] Multi-gateway payment system (Pix, Stripe, PayPal, Telegram)
+- [x] Automatic subscription activation via webhooks
+- [x] Free trial period management (14 days)
+- [x] Public landing page with pricing
+- [x] Optional authentication flow
+- [x] Betting history for logged-in users
+- [x] Netlify deployment ready
+- [x] Complete documentation for deployment
+- [x] LGPD compliance implemented
