@@ -39,21 +39,14 @@ export default function PublicHome() {
 
             {isAuthenticated ? (
               <div className="flex items-center gap-3">
-                <span className="text-[#94a3b8]">{user?.name}</span>
+                <span className="text-[#94a3b8] text-sm">{user?.name}</span>
                 <Link href="/dashboard">
                   <Button className="bg-[#10b981] hover:bg-[#059669] text-white">
                     Dashboard
                   </Button>
                 </Link>
               </div>
-            ) : (
-              <Button
-                onClick={() => (window.location.href = getLoginUrl())}
-                className="bg-[#10b981] hover:bg-[#059669] text-white"
-              >
-                Entrar
-              </Button>
-            )}
+            ) : null}
           </div>
         </div>
       </nav>
@@ -66,7 +59,7 @@ export default function PublicHome() {
           </h1>
           <p className="text-xl text-[#94a3b8] max-w-2xl mx-auto">
             Use inteligência artificial para analisar partidas, detectar arbitragens e gerar
-            recomendações baseadas em dados. Comece grátis, sem necessidade de conta.
+            recomendações baseadas em dados. Todos os recursos disponíveis gratuitamente para teste.
           </p>
         </div>
 
@@ -76,13 +69,6 @@ export default function PublicHome() {
               Explorar Grátis <ArrowRight className="ml-2" size={20} />
             </Button>
           </Link>
-          <Button
-            variant="outline"
-            className="border-[#1e293b] text-white hover:bg-[#1e293b] px-8 py-6 text-lg"
-            onClick={() => (window.location.href = getLoginUrl())}
-          >
-            Entrar com Conta
-          </Button>
         </div>
 
         {/* Stats */}
@@ -108,7 +94,7 @@ export default function PublicHome() {
           <div className="text-center space-y-4">
             <h2 className="text-4xl font-bold text-white">Recursos Disponíveis</h2>
             <p className="text-[#94a3b8] max-w-2xl mx-auto">
-              Todas essas funcionalidades estão disponíveis gratuitamente para começar
+              Todas essas funcionalidades estão disponíveis gratuitamente para você testar
             </p>
           </div>
 
@@ -228,7 +214,7 @@ export default function PublicHome() {
       <section className="max-w-7xl mx-auto px-4 py-20 space-y-12">
         <div className="text-center space-y-4">
           <h2 className="text-4xl font-bold text-white">Como Funciona</h2>
-          <p className="text-[#94a3b8]">3 passos simples para começar</p>
+          <p className="text-[#94a3b8]">Comece a testar agora mesmo</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -239,7 +225,7 @@ export default function PublicHome() {
             <h3 className="text-xl font-bold text-white">Explore Grátis</h3>
             <p className="text-[#94a3b8]">
               Acesse todos os recursos sem necessidade de criar conta. Teste a plataforma
-              livremente.
+              livremente com todas as funcionalidades.
             </p>
           </div>
 
@@ -247,10 +233,10 @@ export default function PublicHome() {
             <div className="w-16 h-16 bg-[#10b981] rounded-full flex items-center justify-center mx-auto">
               <span className="text-2xl font-bold text-white">2</span>
             </div>
-            <h3 className="text-xl font-bold text-white">Crie uma Conta</h3>
+            <h3 className="text-xl font-bold text-white">Salve Seus Dados</h3>
             <p className="text-[#94a3b8]">
-              Quando quiser acessar planos pagos ou histórico de apostas, faça login com sua
-              conta.
+              Crie uma conta quando quiser salvar seu histórico de apostas e acessar recursos
+              premium com mais análises.
             </p>
           </div>
 
@@ -260,7 +246,8 @@ export default function PublicHome() {
             </div>
             <h3 className="text-xl font-bold text-white">Escolha um Plano</h3>
             <p className="text-[#94a3b8]">
-              Selecione o plano que melhor se adequa às suas necessidades e comece a ganhar.
+              Selecione o plano que melhor se adequa às suas necessidades e desbloqueie recursos
+              avançados.
             </p>
           </div>
         </div>
@@ -296,9 +283,13 @@ export default function PublicHome() {
                     <CheckCircle size={16} className="text-[#10b981]" />
                     Radar tático
                   </li>
+                  <li className="flex items-center gap-2 text-[#94a3b8]">
+                    <CheckCircle size={16} className="text-[#10b981]" />
+                    Análise com IA
+                  </li>
                 </ul>
                 <Link href="/dashboard">
-                  <Button className="w-full bg-[#0c1322] hover:bg-[#1e293b] text-white border border-[#1e293b]">
+                  <Button className="w-full bg-[#10b981] hover:bg-[#059669] text-white">
                     Começar Agora
                   </Button>
                 </Link>
@@ -318,7 +309,7 @@ export default function PublicHome() {
                 <ul className="space-y-2">
                   <li className="flex items-center gap-2 text-[#94a3b8]">
                     <CheckCircle size={16} className="text-[#10b981]" />
-                    Análise com IA
+                    Tudo do Free
                   </li>
                   <li className="flex items-center gap-2 text-[#94a3b8]">
                     <CheckCircle size={16} className="text-[#10b981]" />
@@ -337,7 +328,7 @@ export default function PublicHome() {
                   onClick={() => (window.location.href = getLoginUrl())}
                   className="w-full bg-[#10b981] hover:bg-[#059669] text-white"
                 >
-                  Começar Trial
+                  Começar Trial (14 dias)
                 </Button>
               </CardContent>
             </Card>
@@ -359,22 +350,22 @@ export default function PublicHome() {
                   </li>
                   <li className="flex items-center gap-2 text-[#94a3b8]">
                     <CheckCircle size={16} className="text-[#10b981]" />
-                    Análises avançadas
-                  </li>
-                  <li className="flex items-center gap-2 text-[#94a3b8]">
-                    <CheckCircle size={16} className="text-[#10b981]" />
-                    Exportar dados
+                    Análises ilimitadas
                   </li>
                   <li className="flex items-center gap-2 text-[#94a3b8]">
                     <CheckCircle size={16} className="text-[#10b981]" />
                     Suporte prioritário
+                  </li>
+                  <li className="flex items-center gap-2 text-[#94a3b8]">
+                    <CheckCircle size={16} className="text-[#10b981]" />
+                    API access
                   </li>
                 </ul>
                 <Button
                   onClick={() => (window.location.href = getLoginUrl())}
                   className="w-full bg-[#0c1322] hover:bg-[#1e293b] text-white border border-[#1e293b]"
                 >
-                  Começar Trial
+                  Começar Trial (14 dias)
                 </Button>
               </CardContent>
             </Card>
@@ -385,85 +376,47 @@ export default function PublicHome() {
       {/* CTA Section */}
       <section className="max-w-7xl mx-auto px-4 py-20 text-center space-y-8">
         <div className="space-y-4">
-          <h2 className="text-4xl font-bold text-white">Pronto para Começar?</h2>
+          <h2 className="text-4xl font-bold text-white">Pronto para começar?</h2>
           <p className="text-xl text-[#94a3b8]">
             Explore todos os recursos gratuitamente. Sem cartão de crédito necessário.
           </p>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-4 justify-center">
-          <Link href="/dashboard">
-            <Button className="bg-[#10b981] hover:bg-[#059669] text-white px-8 py-6 text-lg">
-              Explorar Agora
-            </Button>
-          </Link>
-          <Button
-            variant="outline"
-            className="border-[#1e293b] text-white hover:bg-[#1e293b] px-8 py-6 text-lg"
-            onClick={() => (window.location.href = getLoginUrl())}
-          >
-            Entrar com Conta
+        <Link href="/dashboard">
+          <Button className="bg-[#10b981] hover:bg-[#059669] text-white px-8 py-6 text-lg">
+            Explorar Agora <ArrowRight className="ml-2" size={20} />
           </Button>
-        </div>
+        </Link>
       </section>
 
       {/* Footer */}
       <footer className="border-t border-[#1e293b] bg-[#0c1322] py-12">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             <div>
-              <h4 className="text-white font-semibold mb-4">Produto</h4>
+              <h3 className="text-white font-bold mb-4">SofaPredict</h3>
+              <p className="text-[#94a3b8] text-sm">
+                Análise inteligente de apostas esportivas com IA
+              </p>
+            </div>
+            <div>
+              <h4 className="text-white font-bold mb-4">Produto</h4>
               <ul className="space-y-2 text-[#94a3b8] text-sm">
-                <li>
-                  <a href="#features" className="hover:text-white transition">
-                    Recursos
-                  </a>
-                </li>
-                <li>
-                  <a href="#pricing" className="hover:text-white transition">
-                    Planos
-                  </a>
-                </li>
+                <li><a href="#features" className="hover:text-white transition">Recursos</a></li>
+                <li><a href="#pricing" className="hover:text-white transition">Preços</a></li>
               </ul>
             </div>
             <div>
-              <h4 className="text-white font-semibold mb-4">Legal</h4>
+              <h4 className="text-white font-bold mb-4">Legal</h4>
               <ul className="space-y-2 text-[#94a3b8] text-sm">
-                <li>
-                  <Link href="/privacy">
-                    <a className="hover:text-white transition">Privacidade</a>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/terms">
-                    <a className="hover:text-white transition">Termos</a>
-                  </Link>
-                </li>
+                <li><Link href="/lgpd-consent"><a className="hover:text-white transition">Privacidade</a></Link></li>
+                <li><a href="#" className="hover:text-white transition">Termos</a></li>
               </ul>
             </div>
             <div>
-              <h4 className="text-white font-semibold mb-4">Contato</h4>
+              <h4 className="text-white font-bold mb-4">Contato</h4>
               <ul className="space-y-2 text-[#94a3b8] text-sm">
-                <li>
-                  <a href="mailto:support@sofapredict.com" className="hover:text-white transition">
-                    Email
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4">Redes</h4>
-              <ul className="space-y-2 text-[#94a3b8] text-sm">
-                <li>
-                  <a href="#" className="hover:text-white transition">
-                    Twitter
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition">
-                    Discord
-                  </a>
-                </li>
+                <li><a href="mailto:support@sofapredict.com" className="hover:text-white transition">support@sofapredict.com</a></li>
               </ul>
             </div>
           </div>
