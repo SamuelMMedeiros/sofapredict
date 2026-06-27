@@ -8,12 +8,22 @@ import SurebetCalculator from "@/components/SurebetCalculator";
 import TacticalRadar from "@/components/TacticalRadar";
 import AIRecommendationGenerator from "@/components/AIRecommendationGenerator";
 import BettingSlipManager from "@/components/BettingSlipManager";
+import MatchFilters, { type MatchFiltersState } from "@/components/MatchFilters";
+import { useMatchFilters, type Match } from "@/hooks/useMatchFilters";
 import { getLoginUrl } from "@/const";
 
 export default function PublicDashboard() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [filters, setFilters] = useState<MatchFiltersState>({
+    league: "all",
+    minConfidence: 0,
+    maxOdds: 10,
+    minOdds: 1,
+    sortBy: "confidence",
+    searchTeam: "",
+  });
 
-  const mockMatches = [
+  const mockMatches: Match[] = [
     {
       id: 1,
       homeTeam: "Flamengo",
@@ -41,7 +51,27 @@ export default function PublicDashboard() {
       confidence: 81,
       time: "19:00",
     },
+    {
+      id: 4,
+      homeTeam: "Real Madrid",
+      awayTeam: "Barcelona",
+      league: "La Liga",
+      odds: { home: 2.0, draw: 3.3, away: 3.6 },
+      confidence: 85,
+      time: "18:00",
+    },
+    {
+      id: 5,
+      homeTeam: "PSG",
+      awayTeam: "Marseille",
+      league: "Ligue 1",
+      odds: { home: 1.8, draw: 3.5, away: 4.2 },
+      confidence: 79,
+      time: "22:00",
+    },
   ];
+
+  const filteredMatches = useMatchFilters(mockMatches, filters);
 
   return (
     <div className="min-h-screen bg-[#090d16]">
@@ -103,8 +133,8 @@ export default function PublicDashboard() {
                 Criar Conta Gratuita
               </Button>
             </a>
-            <Button variant="outline" className="border-[#1e293b] text-[#94a3b8]">
-              Ver Planos
+            <Button variant="outline" className="border-[#10b981] text-[#10b981] hover:bg-[#10b981]/10 px-8">
+              Ver Planos Premium
             </Button>
           </div>
         </div>
@@ -127,9 +157,36 @@ export default function PublicDashboard() {
           </TabsList>
 
           {/* Matches Tab */}
-          <TabsContent value="matches" className="space-y-4">
+          <TabsContent value="matches" className="space-y-6">
+            {/* Filters */}
+            <MatchFilters
+              onFiltersChange={setFilters}
+              onReset={() =>
+                setFilters({
+                  league: "all",
+                  minConfidence: 0,
+                  maxOdds: 10,
+                  minOdds: 1,
+                  sortBy: "confidence",
+                  searchTeam: "",
+                })
+              }
+            />
+
+            {/* Results Summary */}
+            <div className="flex items-center justify-between">
+              <p className="text-[#94a3b8]">
+                {filteredMatches.length} partida{filteredMatches.length !== 1 ? "s" : ""} encontrada
+                {filteredMatches.length !== 1 ? "s" : ""}
+              </p>
+              {filteredMatches.length === 0 && (
+                <p className="text-[#64748b] text-sm">Nenhuma partida corresponde aos filtros selecionados</p>
+              )}
+            </div>
+
+            {/* Matches List */}
             <div className="grid gap-4">
-              {mockMatches.map((match) => (
+              {filteredMatches.map((match) => (
                 <Card key={match.id} className="bg-[#111827] border-[#1e293b]">
                   <CardHeader>
                     <div className="flex items-center justify-between">
