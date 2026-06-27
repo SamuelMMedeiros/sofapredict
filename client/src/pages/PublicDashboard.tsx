@@ -10,6 +10,8 @@ import AIRecommendationGenerator from "@/components/AIRecommendationGenerator";
 import BettingSlipManager from "@/components/BettingSlipManager";
 import MatchFilters, { type MatchFiltersState } from "@/components/MatchFilters";
 import { useMatchFilters, type Match } from "@/hooks/useMatchFilters";
+import { useFavorites } from "@/hooks/useFavorites";
+import FavoriteButton from "@/components/FavoriteButton";
 import { getLoginUrl } from "@/const";
 
 export default function PublicDashboard() {
@@ -22,6 +24,8 @@ export default function PublicDashboard() {
     sortBy: "confidence",
     searchTeam: "",
   });
+
+  const { favoriteMatches, isFavoriteMatch, addFavoriteMatch, removeFavoriteMatch } = useFavorites();
 
   const mockMatches: Match[] = [
     {
@@ -190,7 +194,7 @@ export default function PublicDashboard() {
                 <Card key={match.id} className="bg-[#111827] border-[#1e293b]">
                   <CardHeader>
                     <div className="flex items-center justify-between">
-                      <div>
+                      <div className="flex-1">
                         <CardTitle className="text-white">
                           {match.homeTeam} vs {match.awayTeam}
                         </CardTitle>
@@ -198,9 +202,21 @@ export default function PublicDashboard() {
                           {match.league} • {match.time}
                         </p>
                       </div>
-                      <div className="text-right">
-                        <p className="text-2xl font-bold text-[#10b981]">{match.confidence}%</p>
-                        <p className="text-xs text-[#64748b]">Confiança IA</p>
+                      <div className="flex items-center gap-3">
+                        <div className="text-right">
+                          <p className="text-2xl font-bold text-[#10b981]">{match.confidence}%</p>
+                          <p className="text-xs text-[#64748b]">Confiança IA</p>
+                        </div>
+                        <FavoriteButton
+                          isFavorite={isFavoriteMatch(match.id)}
+                          onToggle={() => {
+                            if (isFavoriteMatch(match.id)) {
+                              removeFavoriteMatch(match.id);
+                            } else {
+                              addFavoriteMatch(match);
+                            }
+                          }}
+                        />
                       </div>
                     </div>
                   </CardHeader>
