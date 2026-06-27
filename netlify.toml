@@ -8,11 +8,7 @@
   publish = "dist"
   
   # Build environment
-  environment = { NODE_VERSION = "22.13.0" }
-
-# Environment variables (set in Netlify UI)
-[build.environment]
-  NODE_ENV = "production"
+  environment = { NODE_VERSION = "22.13.0", NODE_ENV = "production" }
 
 # Redirect all non-file requests to index.html for SPA routing
 [[redirects]]
