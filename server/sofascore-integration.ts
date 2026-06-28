@@ -36,9 +36,9 @@ export async function getSofaScoreLiveMatches() {
   return withCache(cacheKey, "sofascore", CACHE_TTL.MATCHES, async () => {
     try {
       const client = createSofaScoreClient();
-      const response = await client.get("/api/v1/sport/football/events/live");
+      const response = await client.get("/api/v1/sport/football/events/live", { timeout: 5000 });
       
-      if (response.data?.events) {
+      if (response.data?.events && Array.isArray(response.data.events)) {
         return response.data.events.map((event: any) => ({
           id: event.id,
           homeTeam: event.homeTeam?.name || "Unknown",
@@ -59,7 +59,8 @@ export async function getSofaScoreLiveMatches() {
       return [];
     } catch (error) {
       console.error("SofaScore live matches error:", error);
-      throw error;
+      // Return empty array on error - frontend will use mock data
+      return [];
     }
   });
 }
@@ -108,7 +109,7 @@ export async function getSofaScoreUpcomingMatches(days: number = 7) {
       return [];
     } catch (error) {
       console.error("SofaScore upcoming matches error:", error);
-      throw error;
+      return [];
     }
   });
 }
@@ -129,7 +130,7 @@ export async function getSofaScoreMatchStats(matchId: number) {
       return response.data;
     } catch (error) {
       console.error("SofaScore match stats error:", error);
-      throw error;
+      return null;
     }
   });
 }
@@ -150,7 +151,7 @@ export async function getSofaScoreTeamInfo(teamId: number) {
       return response.data;
     } catch (error) {
       console.error("SofaScore team info error:", error);
-      throw error;
+      return null;
     }
   });
 }

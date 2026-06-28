@@ -220,10 +220,11 @@ export const appRouter = router({
 
     getSofaScoreLiveMatches: publicProcedure.query(async () => {
       try {
-        return await sofaScoreIntegration.getSofaScoreLiveMatches();
+        const result = await sofaScoreIntegration.getSofaScoreLiveMatches();
+        return result || [];
       } catch (error) {
         console.error("[SofaScore] Error:", error);
-        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+        return [];
       }
     }),
 
@@ -231,10 +232,11 @@ export const appRouter = router({
       .input(z.object({ days: z.number().optional() }))
       .query(async ({ input }) => {
         try {
-          return await sofaScoreIntegration.getSofaScoreUpcomingMatches(input.days);
+          const result = await sofaScoreIntegration.getSofaScoreUpcomingMatches(input.days);
+          return result || [];
         } catch (error) {
           console.error("[SofaScore] Error:", error);
-          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+          return [];
         }
       }),
   }),

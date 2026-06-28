@@ -57,7 +57,7 @@ export async function getBetMinerLiveOdds(matchId: string | number) {
       return [];
     } catch (error) {
       console.error("BetMiner live odds error:", error);
-      throw error;
+      return [];
     }
   });
 }
@@ -86,7 +86,7 @@ export async function getBetMinerBookmakers() {
       return [];
     } catch (error) {
       console.error("BetMiner bookmakers error:", error);
-      throw error;
+      return [];
     }
   });
 }
@@ -124,7 +124,7 @@ export async function getBetMinerOddsComparison(matchId: string | number) {
       return null;
     } catch (error) {
       console.error("BetMiner odds comparison error:", error);
-      throw error;
+      return null;
     }
   });
 }
