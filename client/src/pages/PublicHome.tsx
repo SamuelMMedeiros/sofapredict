@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { getLoginUrl } from "@/const";
 import { Link } from "wouter";
 import {
   Zap,
@@ -324,12 +323,11 @@ export default function PublicHome() {
                     Histórico completo
                   </li>
                 </ul>
-                <Button
-                  onClick={() => (window.location.href = getLoginUrl())}
-                  className="w-full bg-[#10b981] hover:bg-[#059669] text-white"
-                >
-                  Começar Trial (14 dias)
-                </Button>
+                <Link href="/pricing">
+                  <Button className="w-full bg-[#10b981] hover:bg-[#059669] text-white">
+                    Começar Trial (14 dias)
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
 
@@ -361,12 +359,11 @@ export default function PublicHome() {
                     API access
                   </li>
                 </ul>
-                <Button
-                  onClick={() => (window.location.href = getLoginUrl())}
-                  className="w-full bg-[#0c1322] hover:bg-[#1e293b] text-white border border-[#1e293b]"
-                >
-                  Começar Trial (14 dias)
-                </Button>
+                <Link href="/pricing">
+                  <Button className="w-full bg-[#0c1322] hover:bg-[#1e293b] text-white border border-[#1e293b]">
+                    Começar Trial (14 dias)
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           </div>
