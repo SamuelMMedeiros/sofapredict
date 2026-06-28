@@ -14,6 +14,8 @@ import { useFavorites } from "@/hooks/useFavorites";
 import FavoriteButton from "@/components/FavoriteButton";
 import { useLiveMatches } from "@/hooks/useLiveMatches";
 import { MOCK_MATCHES } from "@/lib/mockMatches";
+import { MatchesGridSkeleton } from "@/components/LoadingSkeletons";
+import { trpc } from "@/lib/trpc";
 
 export default function PublicDashboard() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -27,11 +29,19 @@ export default function PublicDashboard() {
   });
 
   const { favoriteMatches, isFavoriteMatch, addFavoriteMatch, removeFavoriteMatch } = useFavorites();
-  const { matches: liveMatches, loading: loadingMatches, error: errorMatches } = useLiveMatches();
+  
+  // Try SofaScore first, fallback to mock data
+  const { data: sofaScoreMatches, isLoading: sofaScoreLoading } = trpc.api.getSofaScoreLiveMatches.useQuery();
+  const { matches: liveMatches, loading: loadingMatches } = useLiveMatches();
 
-  // Use live matches if available, fallback to improved mock data
-  const matchesToDisplay = (liveMatches && liveMatches.length > 0 ? liveMatches : MOCK_MATCHES) as Match[];
+  // Priority: SofaScore > Live Matches > Mock Data
+  const matchesToDisplay = (sofaScoreMatches && sofaScoreMatches.length > 0 
+    ? sofaScoreMatches 
+    : liveMatches && liveMatches.length > 0 
+      ? liveMatches 
+      : MOCK_MATCHES) as Match[];
   const filteredMatches = useMatchFilters(matchesToDisplay, filters);
+  const isLoading = sofaScoreLoading || loadingMatches;
 
   return (
     <div className="min-h-screen bg-[#090d16]">
@@ -144,7 +154,18 @@ export default function PublicDashboard() {
               )}
             </div>
 
+            {/* Loading State */}
+            {isLoading && filteredMatches.length === 0 && (
+              <MatchesGridSkeleton count={6} />
+            )}
+
             {/* Matches List */}
+            {!isLoading && filteredMatches.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-[#94a3b8] text-lg">Nenhuma partida disponível</p>
+              </div>
+            )}
+            
             <div className="grid gap-4">
               {filteredMatches.map((match) => (
                 <Card key={match.id} className="bg-[#111827] border-[#1e293b]">

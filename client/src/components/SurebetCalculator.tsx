@@ -1,9 +1,11 @@
-import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { AlertCircle, Check, X, Plus, Trash2 } from "lucide-react";
+import { AlertCircle, Check, X, Plus, Trash2, Loader2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useState, useEffect } from "react";
+import { trpc } from "@/lib/trpc";
+import { BookmakersListSkeleton, LoadingSpinner } from "@/components/LoadingSkeletons";
 
 interface Odd {
   bookmaker: string;
@@ -44,6 +46,14 @@ export default function SurebetCalculator() {
   ]);
   const [stake, setStake] = useState("100");
   const [result, setResult] = useState<SurebetResult | null>(null);
+  
+  // Fetch real bookmakers from BetMiner
+  const { data: betMinerBookmakers, isLoading: loadingBookmakers } = trpc.api.getBookmakers.useQuery();
+  
+  // Use BetMiner bookmakers if available, fallback to hardcoded list
+  const availableBookmakers = (betMinerBookmakers && betMinerBookmakers.length > 0)
+    ? betMinerBookmakers.map((bm: any) => typeof bm === 'string' ? bm : bm.name || bm)
+    : BOOKMAKERS;
 
   const calculateSurebet = () => {
     if (odds.length < 2) {
