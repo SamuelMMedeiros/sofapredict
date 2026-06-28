@@ -137,4 +137,4 @@
 - [x] Integrate real betting house data for surebet calculator
 - [x] Fix PublicDashboard to use realistic mock data
 - [x] Add list of real bookmakers for surebet calculator
-- [ ] Test all API integrations end-to-end
+- [x] Test all API integrations end-to-end
