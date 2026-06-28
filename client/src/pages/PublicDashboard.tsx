@@ -12,7 +12,7 @@ import MatchFilters, { type MatchFiltersState } from "@/components/MatchFilters"
 import { useMatchFilters, type Match } from "@/hooks/useMatchFilters";
 import { useFavorites } from "@/hooks/useFavorites";
 import FavoriteButton from "@/components/FavoriteButton";
-import { getLoginUrl } from "@/const";
+import { useLiveMatches } from "@/hooks/useLiveMatches";
 
 export default function PublicDashboard() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -26,7 +26,9 @@ export default function PublicDashboard() {
   });
 
   const { favoriteMatches, isFavoriteMatch, addFavoriteMatch, removeFavoriteMatch } = useFavorites();
+  const { matches: liveMatches, loading: loadingMatches, error: errorMatches } = useLiveMatches();
 
+  // Fallback to mock data if API fails
   const mockMatches: Match[] = [
     {
       id: 1,
@@ -75,7 +77,9 @@ export default function PublicDashboard() {
     },
   ];
 
-  const filteredMatches = useMatchFilters(mockMatches, filters);
+  // Use live matches if available, fallback to mock data
+  const matchesToDisplay = (liveMatches && liveMatches.length > 0 ? liveMatches : mockMatches) as Match[];
+  const filteredMatches = useMatchFilters(matchesToDisplay, filters);
 
   return (
     <div className="min-h-screen bg-[#090d16]">
@@ -94,12 +98,12 @@ export default function PublicDashboard() {
 
           <div className="hidden md:flex items-center gap-4">
             <span className="text-[#94a3b8] text-sm">Modo Exploração Gratuita</span>
-            <a href={getLoginUrl()}>
+            <Link href="/pricing">
               <Button className="bg-[#10b981] hover:bg-[#059669] text-white flex items-center gap-2">
                 <LogIn size={16} />
                 Fazer Login
               </Button>
-            </a>
+            </Link>
           </div>
 
           <button
@@ -114,11 +118,11 @@ export default function PublicDashboard() {
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-[#1e293b] p-4 space-y-3">
             <p className="text-[#94a3b8] text-sm">Modo Exploração Gratuita</p>
-            <a href={getLoginUrl()} className="block">
+            <Link href="/pricing" className="block">
               <Button className="w-full bg-[#10b981] hover:bg-[#059669] text-white">
                 Fazer Login
               </Button>
-            </a>
+            </Link>
           </div>
         )}
       </header>
@@ -132,11 +136,11 @@ export default function PublicDashboard() {
             Explore todos os recursos gratuitamente. Crie uma conta para salvar seus dados e acessar recursos premium.
           </p>
           <div className="flex gap-3">
-            <a href={getLoginUrl()}>
+            <Link href="/pricing">
               <Button className="bg-[#10b981] hover:bg-[#059669] text-white">
                 Criar Conta Gratuita
               </Button>
-            </a>
+            </Link>
             <Button variant="outline" className="border-[#10b981] text-[#10b981] hover:bg-[#10b981]/10 px-8">
               Ver Planos Premium
             </Button>
@@ -309,11 +313,11 @@ export default function PublicDashboard() {
             Crie uma conta gratuita para salvar suas análises, acompanhar histórico de apostas e acessar recursos premium.
           </p>
           <div className="flex gap-3 justify-center flex-wrap">
-            <a href={getLoginUrl()}>
+            <Link href="/pricing">
               <Button className="bg-[#10b981] hover:bg-[#059669] text-white px-8">
                 Criar Conta Gratuita
               </Button>
-            </a>
+            </Link>
             <Button variant="outline" className="border-[#10b981] text-[#10b981] hover:bg-[#10b981]/10 px-8">
               Ver Planos Premium
             </Button>
