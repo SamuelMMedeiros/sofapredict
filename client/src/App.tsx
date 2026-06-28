@@ -10,11 +10,13 @@ import Dashboard from "./pages/Dashboard";
 import LgpdConsent from "./pages/LgpdConsent";
 import AdminFeatureBlocks from "./pages/AdminFeatureBlocks";
 import Favorites from "./pages/Favorites";
+import Login from "./pages/Login";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={PublicHome} />
+      <Route path="/login" component={Login} />
       <Route path="/explore" component={PublicDashboard} />
       <Route path="/favorites" component={Favorites} />
       <Route path="/dashboard" component={Dashboard} />

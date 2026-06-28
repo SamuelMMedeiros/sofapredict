@@ -13,6 +13,7 @@ import { useMatchFilters, type Match } from "@/hooks/useMatchFilters";
 import { useFavorites } from "@/hooks/useFavorites";
 import FavoriteButton from "@/components/FavoriteButton";
 import { useLiveMatches } from "@/hooks/useLiveMatches";
+import { MOCK_MATCHES } from "@/lib/mockMatches";
 
 export default function PublicDashboard() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -28,57 +29,8 @@ export default function PublicDashboard() {
   const { favoriteMatches, isFavoriteMatch, addFavoriteMatch, removeFavoriteMatch } = useFavorites();
   const { matches: liveMatches, loading: loadingMatches, error: errorMatches } = useLiveMatches();
 
-  // Fallback to mock data if API fails
-  const mockMatches: Match[] = [
-    {
-      id: 1,
-      homeTeam: "Flamengo",
-      awayTeam: "Palmeiras",
-      league: "Brasileirão",
-      odds: { home: 2.1, draw: 3.2, away: 3.5 },
-      confidence: 78,
-      time: "20:00",
-    },
-    {
-      id: 2,
-      homeTeam: "São Paulo",
-      awayTeam: "Corinthians",
-      league: "Brasileirão",
-      odds: { home: 1.95, draw: 3.4, away: 3.8 },
-      confidence: 72,
-      time: "21:30",
-    },
-    {
-      id: 3,
-      homeTeam: "Manchester City",
-      awayTeam: "Liverpool",
-      league: "Premier League",
-      odds: { home: 2.3, draw: 3.1, away: 3.2 },
-      confidence: 81,
-      time: "19:00",
-    },
-    {
-      id: 4,
-      homeTeam: "Real Madrid",
-      awayTeam: "Barcelona",
-      league: "La Liga",
-      odds: { home: 2.0, draw: 3.3, away: 3.6 },
-      confidence: 85,
-      time: "18:00",
-    },
-    {
-      id: 5,
-      homeTeam: "PSG",
-      awayTeam: "Marseille",
-      league: "Ligue 1",
-      odds: { home: 1.8, draw: 3.5, away: 4.2 },
-      confidence: 79,
-      time: "22:00",
-    },
-  ];
-
-  // Use live matches if available, fallback to mock data
-  const matchesToDisplay = (liveMatches && liveMatches.length > 0 ? liveMatches : mockMatches) as Match[];
+  // Use live matches if available, fallback to improved mock data
+  const matchesToDisplay = (liveMatches && liveMatches.length > 0 ? liveMatches : MOCK_MATCHES) as Match[];
   const filteredMatches = useMatchFilters(matchesToDisplay, filters);
 
   return (

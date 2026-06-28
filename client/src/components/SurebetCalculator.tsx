@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { AlertCircle, Check, X } from "lucide-react";
+import { AlertCircle, Check, X, Plus, Trash2 } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface Odd {
   bookmaker: string;
@@ -23,6 +24,18 @@ interface SurebetResult {
   totalReturn: number;
   profit: number;
 }
+
+// Real bookmakers list
+const BOOKMAKERS = [
+  "Pinnacle",
+  "bet365",
+  "Betfair",
+  "Unibet",
+  "Bwin",
+  "Betvictor",
+  "Smarkets",
+  "Matchbook",
+];
 
 export default function SurebetCalculator() {
   const [odds, setOdds] = useState<Odd[]>([
@@ -90,7 +103,12 @@ export default function SurebetCalculator() {
   };
 
   const addBookmaker = () => {
-    setOdds([...odds, { bookmaker: "Nova Casa", home: 2.0, draw: 3.5, away: 4.0 }]);
+    const availableBookmakers = BOOKMAKERS.filter(
+      b => !odds.some(o => o.bookmaker === b)
+    );
+    if (availableBookmakers.length > 0) {
+      setOdds([...odds, { bookmaker: availableBookmakers[0], home: 2.0, draw: 3.5, away: 4.0 }]);
+    }
   };
 
   const removeBookmaker = (index: number) => {
@@ -99,16 +117,13 @@ export default function SurebetCalculator() {
 
   const updateOdd = (index: number, field: "home" | "draw" | "away", value: string) => {
     const newOdds = [...odds];
-    newOdds[index] = {
-      ...newOdds[index],
-      [field]: parseFloat(value) || 0,
-    };
+    newOdds[index][field] = parseFloat(value) || 0;
     setOdds(newOdds);
   };
 
-  const updateBookmaker = (index: number, value: string) => {
+  const updateBookmaker = (index: number, bookmaker: string) => {
     const newOdds = [...odds];
-    newOdds[index].bookmaker = value;
+    newOdds[index].bookmaker = bookmaker;
     setOdds(newOdds);
   };
 
@@ -117,146 +132,168 @@ export default function SurebetCalculator() {
       <Card className="bg-[#111827] border-[#1e293b]">
         <CardHeader>
           <CardTitle className="text-white flex items-center gap-2">
-            <AlertCircle size={20} className="text-[#10b981]" />
-            Calculadora de Arbitragem (Surebets)
+            <span>🎯 Calculadora de Arbitragem (Surebet)</span>
           </CardTitle>
+          <p className="text-[#94a3b8] text-sm mt-2">
+            Encontre apostas sem risco cruzando odds de múltiplas casas
+          </p>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           {/* Bookmakers Input */}
           <div className="space-y-3">
-            <h3 className="text-white font-semibold text-sm">Casas de Apostas</h3>
-            {odds.map((odd, index) => (
-              <div key={index} className="bg-[#0c1322] border border-[#1e293b] rounded-lg p-3 space-y-2">
-                <div className="flex gap-2">
-                  <Input
-                    value={odd.bookmaker}
-                    onChange={e => updateBookmaker(index, e.target.value)}
-                    placeholder="Nome da casa"
-                    className="bg-[#111827] border-[#1e293b] text-white text-sm flex-1"
-                  />
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => removeBookmaker(index)}
-                    className="px-2"
-                  >
-                    <X size={16} />
-                  </Button>
+            <div className="flex items-center justify-between">
+              <label className="text-white font-semibold">Casas de Apostas</label>
+              <Button
+                onClick={addBookmaker}
+                size="sm"
+                className="bg-[#10b981] hover:bg-[#059669] text-white"
+                disabled={odds.length >= BOOKMAKERS.length}
+              >
+                <Plus size={16} className="mr-1" />
+                Adicionar
+              </Button>
+            </div>
+
+            <div className="space-y-3 max-h-64 overflow-y-auto">
+              {odds.map((odd, index) => (
+                <div key={index} className="bg-[#0c1322] p-4 rounded-lg border border-[#1e293b] space-y-3">
+                  <div className="flex gap-2 items-end">
+                    <div className="flex-1">
+                      <label className="text-[#94a3b8] text-sm">Casa de Apostas</label>
+                      <Select value={odd.bookmaker} onValueChange={(v) => updateBookmaker(index, v)}>
+                        <SelectTrigger className="bg-[#111827] border-[#1e293b] text-white">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-[#111827] border-[#1e293b]">
+                          {BOOKMAKERS.map(bm => (
+                            <SelectItem key={bm} value={bm} className="text-white">
+                              {bm}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <Button
+                      onClick={() => removeBookmaker(index)}
+                      size="sm"
+                      variant="ghost"
+                      className="text-red-400 hover:text-red-300 hover:bg-red-400/10"
+                    >
+                      <Trash2 size={16} />
+                    </Button>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2">
+                    <div>
+                      <label className="text-[#94a3b8] text-xs">Casa (1)</label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        value={odd.home}
+                        onChange={(e) => updateOdd(index, "home", e.target.value)}
+                        className="bg-[#111827] border-[#1e293b] text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[#94a3b8] text-xs">Empate (X)</label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        value={odd.draw}
+                        onChange={(e) => updateOdd(index, "draw", e.target.value)}
+                        className="bg-[#111827] border-[#1e293b] text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[#94a3b8] text-xs">Visitante (2)</label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        value={odd.away}
+                        onChange={(e) => updateOdd(index, "away", e.target.value)}
+                        className="bg-[#111827] border-[#1e293b] text-white"
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div className="grid grid-cols-3 gap-2">
-                  <div>
-                    <label className="text-[#94a3b8] text-xs">Vitória (1)</label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={odd.home}
-                      onChange={e => updateOdd(index, "home", e.target.value)}
-                      className="bg-[#111827] border-[#1e293b] text-white text-sm mt-1"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[#94a3b8] text-xs">Empate (X)</label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={odd.draw}
-                      onChange={e => updateOdd(index, "draw", e.target.value)}
-                      className="bg-[#111827] border-[#1e293b] text-white text-sm mt-1"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[#94a3b8] text-xs">Derrota (2)</label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={odd.away}
-                      onChange={e => updateOdd(index, "away", e.target.value)}
-                      className="bg-[#111827] border-[#1e293b] text-white text-sm mt-1"
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={addBookmaker}
-              className="w-full text-xs"
-            >
-              + Adicionar Casa
-            </Button>
+              ))}
+            </div>
           </div>
 
           {/* Stake Input */}
           <div>
-            <label className="text-white text-sm font-semibold">Valor Total da Aposta (R$)</label>
+            <label className="text-white font-semibold block mb-2">Valor Total da Aposta (R$)</label>
             <Input
               type="number"
-              step="0.01"
               value={stake}
-              onChange={e => setStake(e.target.value)}
-              placeholder="100.00"
-              className="bg-[#0c1322] border-[#1e293b] text-white mt-2"
+              onChange={(e) => setStake(e.target.value)}
+              className="bg-[#0c1322] border-[#1e293b] text-white"
+              placeholder="100"
             />
           </div>
 
           {/* Calculate Button */}
           <Button
             onClick={calculateSurebet}
-            className="w-full bg-[#10b981] hover:bg-[#059669] text-white"
+            className="w-full bg-[#10b981] hover:bg-[#059669] text-white py-6 text-base"
           >
             Calcular Arbitragem
           </Button>
 
           {/* Results */}
           {result && (
-            <div className="mt-4 space-y-3 bg-[#0c1322] border border-[#1e293b] rounded-lg p-4">
-              <div className="flex items-center justify-between">
-                <span className="text-white font-semibold">Status:</span>
-                <div className="flex items-center gap-2">
-                  {result.isSurebet ? (
-                    <>
-                      <Check size={20} className="text-[#10b981]" />
-                      <span className="text-[#10b981] font-bold">SUREBET ENCONTRADA!</span>
-                    </>
-                  ) : (
-                    <>
-                      <X size={20} className="text-red-500" />
-                      <span className="text-red-500 font-bold">Sem arbitragem</span>
-                    </>
-                  )}
+            <div className="space-y-4 pt-4 border-t border-[#1e293b]">
+              <div className={`p-4 rounded-lg flex items-start gap-3 ${
+                result.isSurebet
+                  ? "bg-[#10b981]/10 border border-[#10b981]/30"
+                  : "bg-red-500/10 border border-red-500/30"
+              }`}>
+                {result.isSurebet ? (
+                  <Check className="text-[#10b981] flex-shrink-0 mt-1" size={20} />
+                ) : (
+                  <AlertCircle className="text-red-400 flex-shrink-0 mt-1" size={20} />
+                )}
+                <div>
+                  <p className={`font-bold ${result.isSurebet ? "text-[#10b981]" : "text-red-400"}`}>
+                    {result.isSurebet ? "✓ Arbitragem Encontrada!" : "✗ Sem Arbitragem"}
+                  </p>
+                  <p className="text-[#94a3b8] text-sm">
+                    {result.isSurebet
+                      ? `ROI: ${result.roi.toFixed(2)}% - Lucro garantido de R$ ${result.profit.toFixed(2)}`
+                      : "As odds não formam uma arbitragem lucrativa"}
+                  </p>
                 </div>
               </div>
 
               {result.isSurebet && (
                 <>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div>
-                      <p className="text-[#94a3b8]">ROI</p>
-                      <p className="text-[#10b981] font-bold">{result.roi.toFixed(2)}%</p>
-                    </div>
-                    <div>
-                      <p className="text-[#94a3b8]">Lucro</p>
-                      <p className="text-[#10b981] font-bold">R$ {result.profit.toFixed(2)}</p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <p className="text-white text-xs font-semibold">Distribuição de Apostas:</p>
-                    {result.bestSelection.map((sel, i) => (
-                      <div key={i} className="bg-[#111827] rounded p-2 text-xs">
-                        <div className="flex justify-between">
-                          <span className="text-[#94a3b8]">
-                            {sel.option === "1" ? "Vitória" : sel.option === "X" ? "Empate" : "Derrota"}
-                          </span>
-                          <span className="text-white">{sel.bookmaker}</span>
-                        </div>
-                        <div className="flex justify-between mt-1">
-                          <span className="text-[#94a3b8]">Odd: {sel.odd.toFixed(2)}</span>
-                          <span className="text-[#10b981]">Retorno: R$ {(result.totalReturn / 3).toFixed(2)}</span>
+                  <div className="bg-[#0c1322] p-4 rounded-lg border border-[#1e293b] space-y-3">
+                    <h4 className="text-white font-semibold">Melhor Distribuição de Apostas:</h4>
+                    {result.bestSelection.map((sel, idx) => (
+                      <div key={idx} className="flex justify-between items-center">
+                        <div>
+                          <p className="text-[#94a3b8] text-sm">
+                            {sel.option === "1" ? "Casa" : sel.option === "X" ? "Empate" : "Visitante"} - {sel.bookmaker}
+                          </p>
+                          <p className="text-white font-semibold">Odd: {sel.odd.toFixed(2)}</p>
                         </div>
                       </div>
                     ))}
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2 text-center">
+                    <div className="bg-[#0c1322] p-3 rounded-lg border border-[#1e293b]">
+                      <p className="text-[#94a3b8] text-xs">Aposta Total</p>
+                      <p className="text-[#10b981] font-bold">R$ {result.totalStake.toFixed(2)}</p>
+                    </div>
+                    <div className="bg-[#0c1322] p-3 rounded-lg border border-[#1e293b]">
+                      <p className="text-[#94a3b8] text-xs">Retorno</p>
+                      <p className="text-[#10b981] font-bold">R$ {result.totalReturn.toFixed(2)}</p>
+                    </div>
+                    <div className="bg-[#0c1322] p-3 rounded-lg border border-[#1e293b]">
+                      <p className="text-[#94a3b8] text-xs">Lucro</p>
+                      <p className="text-[#10b981] font-bold">R$ {result.profit.toFixed(2)}</p>
+                    </div>
                   </div>
                 </>
               )}
