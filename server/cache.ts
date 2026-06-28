@@ -62,7 +62,7 @@ export async function getCachedData(cacheKey: string) {
 export async function setCachedData(
   cacheKey: string,
   data: any,
-  source: "rapidapi" | "gemini" | "sofascore",
+  source: "rapidapi" | "gemini" | "sofascore" | "betminer",
   ttlSeconds: number
 ) {
   const db = await getDb();
@@ -143,7 +143,7 @@ export async function invalidateCachePattern(pattern: string) {
  */
 export async function withCache<T>(
   cacheKey: string,
-  source: "rapidapi" | "gemini" | "sofascore",
+  source: "rapidapi" | "gemini" | "sofascore" | "betminer",
   ttlSeconds: number,
   fetchFn: () => Promise<T>
 ): Promise<T> {

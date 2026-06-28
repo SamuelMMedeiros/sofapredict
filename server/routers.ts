@@ -1,4 +1,4 @@
-import { COOKIE_NAME } from "@shared/const";
+import { COOKIE_NAME } from "../shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, protectedProcedure } from "./_core/trpc";
@@ -6,6 +6,8 @@ import { z } from "zod";
 import * as userQueries from "./user-queries";
 import * as apiIntegrations from "./api-integrations";
 import * as geminiIntegration from "./gemini-integration";
+import * as betMinerIntegration from "./betminer-integration";
+import * as sofaScoreIntegration from "./sofascore-integration";
 import { TRPCError } from "@trpc/server";
 
 export const appRouter = router({
@@ -187,6 +189,51 @@ export const appRouter = router({
           return await apiIntegrations.getLeagueStandings(input.leagueId, input.season);
         } catch (error) {
           console.error("[API] Error getting standings:", error);
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+        }
+      }),
+
+    getLiveOdds: publicProcedure
+      .input(z.object({ matchId: z.string().or(z.number()) }))
+      .query(async ({ input }) => {
+        try {
+          return await betMinerIntegration.getBetMinerLiveOdds(input.matchId);
+        } catch (error) {
+          console.error("[BetMiner] Error, trying SofaScore:", error);
+          try {
+            return await sofaScoreIntegration.getSofaScoreLiveMatches();
+          } catch (sofaError) {
+            console.error("[SofaScore] Fallback failed:", sofaError);
+            throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+          }
+        }
+      }),
+
+    getBookmakers: publicProcedure.query(async () => {
+      try {
+        return await betMinerIntegration.getBetMinerBookmakers();
+      } catch (error) {
+        console.error("[BetMiner] Error:", error);
+        return [];
+      }
+    }),
+
+    getSofaScoreLiveMatches: publicProcedure.query(async () => {
+      try {
+        return await sofaScoreIntegration.getSofaScoreLiveMatches();
+      } catch (error) {
+        console.error("[SofaScore] Error:", error);
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      }
+    }),
+
+    getSofaScoreUpcomingMatches: publicProcedure
+      .input(z.object({ days: z.number().optional() }))
+      .query(async ({ input }) => {
+        try {
+          return await sofaScoreIntegration.getSofaScoreUpcomingMatches(input.days);
+        } catch (error) {
+          console.error("[SofaScore] Error:", error);
           throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
         }
       }),

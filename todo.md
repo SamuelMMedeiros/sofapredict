@@ -138,3 +138,14 @@
 - [x] Fix PublicDashboard to use realistic mock data
 - [x] Add list of real bookmakers for surebet calculator
 - [x] Test all API integrations end-to-end
+
+
+## Phase 6 - SofaScore & BetMiner API Integration
+- [x] Setup SofaScore API integration for match data and statistics
+- [x] Setup BetMiner API integration for live odds and bookmaker data
+- [x] Create tRPC endpoints for SofaScore matches and stats
+- [x] Create tRPC endpoints for BetMiner odds data with fallback
+- [ ] Update PublicDashboard to use real SofaScore data
+- [ ] Integrate BetMiner odds into SurebetCalculator
+- [ ] Add error handling and fallback to mock data
+- [ ] Test all API flows end-to-end
