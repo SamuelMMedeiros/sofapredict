@@ -8,6 +8,7 @@ import { ArrowLeft, Trash2, Heart, Search } from "lucide-react";
 import { Link } from "wouter";
 import { useFavorites } from "@/hooks/useFavorites";
 import FavoriteButton from "@/components/FavoriteButton";
+import ShareFavorites from "@/components/ShareFavorites";
 
 export default function Favorites() {
   const { favoriteTeams, favoriteMatches, removeFavoriteTeam, removeFavoriteMatch, isFavoriteMatch } = useFavorites();
@@ -53,6 +54,7 @@ export default function Favorites() {
               </p>
             </div>
           </div>
+          <ShareFavorites favoriteTeams={favoriteTeams} favoriteMatches={favoriteMatches} />
         </div>
       </header>
 
