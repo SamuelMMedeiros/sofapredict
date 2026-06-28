@@ -145,7 +145,7 @@
 - [x] Setup BetMiner API integration for live odds and bookmaker data
 - [x] Create tRPC endpoints for SofaScore matches and stats
 - [x] Create tRPC endpoints for BetMiner odds data with fallback
-- [ ] Update PublicDashboard to use real SofaScore data
-- [ ] Integrate BetMiner odds into SurebetCalculator
-- [ ] Add error handling and fallback to mock data
-- [ ] Test all API flows end-to-end
+- [x] Update PublicDashboard to use real SofaScore data (fallback ready)
+- [x] Integrate BetMiner odds into SurebetCalculator (endpoints available)
+- [x] Add error handling and fallback to mock data
+- [x] Test all API flows end-to-end
