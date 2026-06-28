@@ -406,7 +406,7 @@ export default function PublicHome() {
             <div>
               <h4 className="text-white font-bold mb-4">Legal</h4>
               <ul className="space-y-2 text-[#94a3b8] text-sm">
-                <li><Link href="/lgpd-consent"><a className="hover:text-white transition">Privacidade</a></Link></li>
+                <li><Link href="/lgpd-consent" className="hover:text-white transition">Privacidade</Link></li>
                 <li><a href="#" className="hover:text-white transition">Termos</a></li>
               </ul>
             </div>
