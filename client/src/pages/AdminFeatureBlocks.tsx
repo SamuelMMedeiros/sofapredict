@@ -5,7 +5,6 @@ import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import {
   Zap,
@@ -98,6 +97,29 @@ export default function AdminFeatureBlocks() {
   const [globalTrialDays, setGlobalTrialDays] = useState(14);
   const [isSaving, setIsSaving] = useState(false);
 
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("sofapredict-feature-blocks");
+      if (!saved) return;
+      const parsed = JSON.parse(saved) as {
+        blocks?: Array<Partial<FeatureBlock> & { id: string }>;
+        trialDays?: number;
+      };
+      if (parsed.blocks) {
+        setFeatureBlocks(current =>
+          current.map(block => ({
+            ...block,
+            ...parsed.blocks?.find(savedBlock => savedBlock.id === block.id),
+            icon: block.icon,
+          }))
+        );
+      }
+      if (typeof parsed.trialDays === "number") setGlobalTrialDays(parsed.trialDays);
+    } catch {
+      localStorage.removeItem("sofapredict-feature-blocks");
+    }
+  }, []);
+
   // Check if user is admin
   if (!isAuthenticated || user?.role !== "admin") {
     return (
@@ -132,9 +154,13 @@ export default function AdminFeatureBlocks() {
   const handleSaveChanges = async () => {
     setIsSaving(true);
     try {
-      // TODO: Implement API call to save feature blocks
-      // await trpc.admin.updateFeatureBlocks.mutate({ blocks: featureBlocks, trialDays: globalTrialDays });
-      
+      localStorage.setItem(
+        "sofapredict-feature-blocks",
+        JSON.stringify({
+          blocks: featureBlocks.map(({ icon, ...block }) => block),
+          trialDays: globalTrialDays,
+        })
+      );
       toast.success("Configurações salvas com sucesso!");
     } catch (error) {
       toast.error("Erro ao salvar configurações");
@@ -145,6 +171,7 @@ export default function AdminFeatureBlocks() {
 
   const handleResetToDefaults = () => {
     if (confirm("Tem certeza que deseja restaurar as configurações padrão?")) {
+      localStorage.removeItem("sofapredict-feature-blocks");
       setFeatureBlocks([
         {
           id: "ai-analysis",

@@ -11,12 +11,18 @@ import LgpdConsent from "./pages/LgpdConsent";
 import AdminFeatureBlocks from "./pages/AdminFeatureBlocks";
 import Favorites from "./pages/Favorites";
 import Login from "./pages/Login";
+import MatchDetails from "./pages/MatchDetails";
+import Pricing from "./pages/Pricing";
+import FreeTools from "./pages/FreeTools";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={PublicHome} />
       <Route path="/login" component={Login} />
+      <Route path="/match/:id" component={MatchDetails} />
+      <Route path="/pricing" component={Pricing} />
+      <Route path="/free-tools" component={FreeTools} />
       <Route path="/explore" component={PublicDashboard} />
       <Route path="/favorites" component={Favorites} />
       <Route path="/dashboard" component={Dashboard} />

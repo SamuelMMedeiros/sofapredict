@@ -74,7 +74,7 @@ export type InsertUserBetHistory = typeof userBetsHistory.$inferInsert;
 export const apiCache = mysqlTable("api_cache", {
   id: int("id").autoincrement().primaryKey(),
   cacheKey: varchar("cache_key", { length: 255 }).notNull().unique(),
-  source: mysqlEnum("source", ["rapidapi", "gemini", "sofascore"]),
+  source: mysqlEnum("source", ["rapidapi", "gemini", "sofascore", "betminer"]),
   data: json("data"),
   expiresAt: timestamp("expires_at").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),

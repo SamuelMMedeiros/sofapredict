@@ -12,6 +12,25 @@ export const CACHE_TTL = {
   STANDINGS: parseInt(process.env.CACHE_TTL_STANDINGS || "3600"), // 1 hour
 };
 
+type MemoryCacheEntry = {
+  data: unknown;
+  expiresAt: number;
+};
+
+const memoryCache = new Map<string, MemoryCacheEntry>();
+
+function getMemoryCachedData(cacheKey: string) {
+  const cached = memoryCache.get(cacheKey);
+  if (!cached) return null;
+
+  if (cached.expiresAt <= Date.now()) {
+    memoryCache.delete(cacheKey);
+    return null;
+  }
+
+  return cached.data;
+}
+
 /**
  * Generate a cache key from parameters
  */
@@ -28,7 +47,7 @@ export function generateCacheKey(source: string, params: Record<string, any>): s
  */
 export async function getCachedData(cacheKey: string) {
   const db = await getDb();
-  if (!db) return null;
+  if (!db) return getMemoryCachedData(cacheKey);
 
   try {
     const result = await db
@@ -52,7 +71,7 @@ export async function getCachedData(cacheKey: string) {
     return cached.data;
   } catch (error) {
     console.error("[Cache] Error retrieving cached data:", error);
-    return null;
+    return getMemoryCachedData(cacheKey);
   }
 }
 
@@ -66,7 +85,13 @@ export async function setCachedData(
   ttlSeconds: number
 ) {
   const db = await getDb();
-  if (!db) return false;
+  if (!db) {
+    memoryCache.set(cacheKey, {
+      data,
+      expiresAt: Date.now() + ttlSeconds * 1000,
+    });
+    return true;
+  }
 
   try {
     const expiresAt = new Date(Date.now() + ttlSeconds * 1000);
@@ -98,17 +123,26 @@ export async function setCachedData(
  */
 export async function clearExpiredCache() {
   const db = await getDb();
-  if (!db) return 0;
+  let deletedCount = 0;
+
+  memoryCache.forEach((cached, cacheKey) => {
+    if (cached.expiresAt <= Date.now()) {
+      memoryCache.delete(cacheKey);
+      deletedCount += 1;
+    }
+  });
+
+  if (!db) return deletedCount;
 
   try {
     await db
       .delete(apiCache)
       .where(lt(apiCache.expiresAt, new Date()));
 
-    return 0;
+    return deletedCount;
   } catch (error) {
     console.error("[Cache] Error clearing expired cache:", error);
-    return 0;
+    return deletedCount;
   }
 }
 
@@ -117,23 +151,32 @@ export async function clearExpiredCache() {
  */
 export async function invalidateCachePattern(pattern: string) {
   const db = await getDb();
-  if (!db) return 0;
+  let deletedCount = 0;
+
+  memoryCache.forEach((_cached, cacheKey) => {
+    if (cacheKey.includes(pattern)) {
+      memoryCache.delete(cacheKey);
+      deletedCount += 1;
+    }
+  });
+
+  if (!db) return deletedCount;
 
   try {
     // This is a simple implementation - in production, consider using LIKE queries
     const allCache = await db.select().from(apiCache);
     const toDelete = allCache.filter(c => c.cacheKey.includes(pattern));
 
-    if (toDelete.length === 0) return 0;
+    if (toDelete.length === 0) return deletedCount;
 
     for (const cache of toDelete) {
       await db.delete(apiCache).where(eq(apiCache.cacheKey, cache.cacheKey));
     }
 
-    return toDelete.length;
+    return deletedCount + toDelete.length;
   } catch (error) {
     console.error("[Cache] Error invalidating cache pattern:", error);
-    return 0;
+    return deletedCount;
   }
 }
 
@@ -149,7 +192,7 @@ export async function withCache<T>(
 ): Promise<T> {
   // Try to get from cache
   const cached = await getCachedData(cacheKey);
-  if (cached) {
+  if (cached !== null) {
     console.log(`[Cache] Hit for key: ${cacheKey}`);
     return cached as T;
   }

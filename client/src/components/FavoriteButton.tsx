@@ -28,7 +28,10 @@ export default function FavoriteButton({
 
   return (
     <Button
-      onClick={onToggle}
+      onClick={event => {
+        event.stopPropagation();
+        onToggle();
+      }}
       className={`${sizeClasses[size]} ${
         isFavorite
           ? "bg-[#ef4444] hover:bg-[#dc2626] text-white"

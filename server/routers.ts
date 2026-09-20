@@ -9,11 +9,51 @@ import * as geminiIntegration from "./gemini-integration";
 import * as betMinerIntegration from "./betminer-integration";
 import * as sofaScoreIntegration from "./sofascore-integration";
 import { TRPCError } from "@trpc/server";
+import { createHash } from "node:crypto";
+import { sdk } from "./_core/sdk";
+import * as db from "./db";
 
 export const appRouter = router({
   system: systemRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
+    login: publicProcedure
+      .input(
+        z.object({
+          name: z.string().trim().min(2).max(120),
+          email: z.string().trim().email().max(320),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        const email = input.email.toLowerCase();
+        const openId = `local_${createHash("sha256").update(email).digest("hex").slice(0, 48)}`;
+
+        await db.upsertUser({
+          openId,
+          name: input.name,
+          email,
+          loginMethod: "local",
+          lastSignedIn: new Date(),
+        });
+
+        const user = await db.getUserByOpenId(openId);
+        if (!user) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Banco de dados não configurado para autenticação local",
+          });
+        }
+
+        const sessionToken = await sdk.createSessionToken(openId, {
+          name: input.name,
+        });
+        ctx.res.cookie(COOKIE_NAME, sessionToken, {
+          ...getSessionCookieOptions(ctx.req),
+          maxAge: 1000 * 60 * 60 * 24 * 365,
+        });
+
+        return { success: true, user };
+      }),
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });

@@ -3,10 +3,23 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "wouter";
 import { ArrowLeft, LogIn, Zap, TrendingUp, Shield, Clock } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { getLoginUrl } from "@/const";
+import { trpc } from "@/lib/trpc";
+import { useState } from "react";
 
 export default function LoginPage() {
   const { isAuthenticated } = useAuth();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const loginMutation = trpc.auth.login.useMutation({
+    onSuccess: () => {
+      window.location.href = "/dashboard";
+    },
+  });
+
+  const handleLogin = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    loginMutation.mutate({ name, email });
+  };
 
   if (isAuthenticated) {
     return (
@@ -123,7 +136,7 @@ export default function LoginPage() {
               <CardHeader className="bg-gradient-to-r from-[#10b981]/5 to-[#059669]/5 border-b border-[#1e293b]/50">
                 <CardTitle className="text-white text-3xl">Bem-vindo</CardTitle>
                 <p className="text-[#94a3b8] text-sm mt-2">
-                  Conecte-se com sua conta Manus para começar
+                  Crie sua conta SofaPredict para começar
                 </p>
               </CardHeader>
               <CardContent className="space-y-6 pt-8">
@@ -131,32 +144,54 @@ export default function LoginPage() {
                 <div className="bg-gradient-to-r from-[#10b981]/10 to-[#059669]/10 p-4 rounded-lg border border-[#10b981]/20">
                   <p className="text-[#94a3b8] text-sm flex items-start gap-2">
                     <Shield size={16} className="text-[#10b981] flex-shrink-0 mt-0.5" />
-                    <span>Você será redirecionado para o portal de autenticação seguro do Manus.</span>
+                    <span>Seus dados ficam protegidos por uma sessão segura da própria aplicação.</span>
                   </p>
                 </div>
 
-                {/* Login button */}
-                <a href={getLoginUrl()} className="block">
-                  <Button className="w-full bg-gradient-to-r from-[#10b981] to-[#059669] hover:from-[#059669] hover:to-[#047857] text-white py-6 text-base font-semibold shadow-lg hover:shadow-[0_0_30px_rgba(16,185,129,0.3)] transition-all duration-300 transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
+                <form onSubmit={handleLogin} className="space-y-4">
+                  <label className="block text-sm text-[#cbd5e1]">
+                    Nome
+                    <input
+                      value={name}
+                      onChange={event => setName(event.target.value)}
+                      required
+                      minLength={2}
+                      maxLength={120}
+                      className="mt-2 w-full rounded-md border border-[#334155] bg-[#0f172a] px-3 py-3 text-white outline-none focus:border-[#10b981]"
+                      placeholder="Seu nome"
+                    />
+                  </label>
+                  <label className="block text-sm text-[#cbd5e1]">
+                    E-mail
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={event => setEmail(event.target.value)}
+                      required
+                      maxLength={320}
+                      className="mt-2 w-full rounded-md border border-[#334155] bg-[#0f172a] px-3 py-3 text-white outline-none focus:border-[#10b981]"
+                      placeholder="voce@exemplo.com"
+                    />
+                  </label>
+                  {loginMutation.error && (
+                    <p className="text-sm text-red-400">
+                      {loginMutation.error.message}
+                    </p>
+                  )}
+                  <Button
+                    type="submit"
+                    disabled={loginMutation.isPending}
+                    className="w-full bg-gradient-to-r from-[#10b981] to-[#059669] hover:from-[#059669] hover:to-[#047857] text-white py-6 text-base font-semibold shadow-lg hover:shadow-[0_0_30px_rgba(16,185,129,0.3)] transition-all duration-300 flex items-center justify-center gap-2"
+                  >
                     <LogIn size={20} />
-                    Conectar com Manus
+                    {loginMutation.isPending ? "Entrando..." : "Entrar no SofaPredict"}
                   </Button>
-                </a>
-
-                {/* Divider */}
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-[#1e293b]/50"></div>
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-[#111827] text-[#64748b]">ou</span>
-                  </div>
-                </div>
+                </form>
 
                 {/* Info section */}
                 <div className="space-y-4">
                   <p className="text-[#94a3b8] text-sm text-center">
-                    Não tem uma conta? Você pode criar uma durante o login.
+                    A conta é criada automaticamente no primeiro acesso.
                   </p>
                   <Link href="/">
                     <Button 

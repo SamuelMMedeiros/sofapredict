@@ -8,7 +8,7 @@
 - [x] Implement cache invalidation logic
 
 ## Authentication & Security
-- [x] Setup user authentication with Manus OAuth
+- [x] Setup user authentication with local JWT sessions
 - [x] Create user profile management (name, email, preferences)
 - [x] Implement LGPD compliance with consent screen
 - [x] Setup secure API key storage for RapidAPI

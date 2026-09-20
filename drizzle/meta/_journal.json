@@ -15,6 +15,13 @@
       "when": 1782596201147,
       "tag": "0001_thick_nightmare",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1789878936407,
+      "tag": "0002_military_norrin_radd",
+      "breakpoints": true
     }
   ]
 }

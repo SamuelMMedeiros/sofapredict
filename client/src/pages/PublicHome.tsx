@@ -45,7 +45,13 @@ export default function PublicHome() {
                   </Button>
                 </Link>
               </div>
-            ) : null}
+            ) : (
+              <Link href="/login">
+                <Button className="bg-[#10b981] hover:bg-[#059669] text-white">
+                  Criar conta grátis
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </nav>
@@ -66,6 +72,11 @@ export default function PublicHome() {
           <Link href="/explore">
             <Button className="bg-[#10b981] hover:bg-[#059669] text-white px-8 py-6 text-lg">
               Explorar Grátis <ArrowRight className="ml-2" size={20} />
+            </Button>
+          </Link>
+          <Link href="/free-tools">
+            <Button variant="outline" className="border-[#10b981] text-[#10b981] px-8 py-6 text-lg hover:bg-[#10b981]/10">
+              30 ferramentas grátis
             </Button>
           </Link>
         </div>

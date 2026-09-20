@@ -213,13 +213,11 @@ const normalizeToolChoice = (
 };
 
 const resolveApiUrl = () =>
-  ENV.forgeApiUrl && ENV.forgeApiUrl.trim().length > 0
-    ? `${ENV.forgeApiUrl.replace(/\/$/, "")}/v1/chat/completions`
-    : "https://forge.manus.im/v1/chat/completions";
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 
 const assertApiKey = () => {
-  if (!ENV.forgeApiKey) {
-    throw new Error("OPENAI_API_KEY is not configured");
+  if (!ENV.geminiApiKey) {
+    throw new Error("GEMINI_API_KEY is not configured");
   }
 };
 
@@ -339,7 +337,78 @@ const fetchWithBackoff = async (
     : new Error("LLM request failed after exhausting retries");
 };
 
+async function invokeGemini(params: InvokeParams): Promise<InvokeResult> {
+  assertApiKey();
+
+  const systemInstruction = params.messages
+    .filter(message => message.role === "system")
+    .map(message => message.content)
+    .map(content => (typeof content === "string" ? content : JSON.stringify(content)))
+    .join("\n");
+  const contents = params.messages
+    .filter(message => message.role !== "system")
+    .map(message => ({
+      role: message.role === "assistant" ? "model" : "user",
+      parts: [{
+        text: typeof message.content === "string" ? message.content : JSON.stringify(message.content),
+      }],
+    }));
+  const responseFormat = params.response_format || params.responseFormat;
+  const generationConfig: Record<string, unknown> = {};
+
+  if (params.max_tokens ?? params.maxTokens) {
+    generationConfig.maxOutputTokens = params.max_tokens ?? params.maxTokens;
+  }
+  if (responseFormat?.type === "json_object" || responseFormat?.type === "json_schema") {
+    generationConfig.responseMimeType = "application/json";
+    if (responseFormat.type === "json_schema") {
+      generationConfig.responseSchema = responseFormat.json_schema.schema;
+    }
+  }
+
+  const response = await fetchWithBackoff(
+    `${resolveApiUrl()}?key=${encodeURIComponent(ENV.geminiApiKey)}`,
+    {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        ...(systemInstruction
+          ? { systemInstruction: { parts: [{ text: systemInstruction }] } }
+          : {}),
+        contents,
+        generationConfig,
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`Gemini request failed: ${response.status} ${await response.text()}`);
+  }
+
+  const result = await response.json() as {
+    candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+    usageMetadata?: { promptTokenCount?: number; candidatesTokenCount?: number };
+  };
+  const text = result.candidates?.[0]?.content?.parts?.map(part => part.text || "").join("") || "";
+  if (!text) throw new Error("Gemini returned an empty response");
+
+  return {
+    id: `gemini-${Date.now()}`,
+    created: Date.now(),
+    model: params.model || "gemini-2.0-flash",
+    choices: [{ index: 0, message: { role: "assistant", content: text }, finish_reason: "stop" }],
+    usage: result.usageMetadata
+      ? {
+          prompt_tokens: result.usageMetadata.promptTokenCount || 0,
+          completion_tokens: result.usageMetadata.candidatesTokenCount || 0,
+          total_tokens: (result.usageMetadata.promptTokenCount || 0) + (result.usageMetadata.candidatesTokenCount || 0),
+        }
+      : undefined,
+  };
+}
+
 export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
+  return invokeGemini(params);
   assertApiKey();
 
   const {
@@ -366,7 +435,7 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     payload.model = model;
   }
 
-  if (tools && tools.length > 0) {
+  if (tools?.length) {
     payload.tools = tools;
   }
 
@@ -405,7 +474,7 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      authorization: `Bearer ${ENV.forgeApiKey}`,
+      authorization: `Bearer ${ENV.geminiApiKey}`,
     },
     body: JSON.stringify(payload),
   });
@@ -434,21 +503,13 @@ export type ModelsResponse = {
 
 export async function listLLMModels(): Promise<ModelsResponse> {
   assertApiKey();
-
-  const url = ENV.forgeApiUrl && ENV.forgeApiUrl.trim().length > 0
-    ? `${ENV.forgeApiUrl.replace(/\/$/, "")}/v1/models`
-    : "https://forge.manus.im/v1/models";
-
-  const response = await fetchWithBackoff(url, {
-    headers: { authorization: `Bearer ${ENV.forgeApiKey}` },
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(
-      `List LLM models failed: ${response.status} ${response.statusText} – ${errorText}`
-    );
-  }
-
-  return (await response.json()) as ModelsResponse;
+  return {
+    object: "list",
+    data: [{
+      id: "gemini-2.0-flash",
+      object: "model",
+      created: Date.now(),
+      owned_by: "google",
+    }],
+  };
 }

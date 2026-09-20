@@ -12,7 +12,7 @@ SofaPredict é uma plataforma web premium para análise inteligente de apostas e
 - **Coluna 3:** Bilhete de apostas, calculadora de arbitragem, gerador de tripla recomendada
 
 ### 2. Autenticação e Perfil
-- Autenticação via Manus OAuth
+- Autenticação local com sessão JWT
 - Perfil individual com preferências personalizadas
 - Seguir até 5 times favoritos
 - Toggle de modo OLED/dark
@@ -50,7 +50,7 @@ SofaPredict é uma plataforma web premium para análise inteligente de apostas e
 - **Banco de Dados:** Supabase (PostgreSQL) com RLS
 - **IA:** Google Gemini para análises
 - **APIs Externas:** SportAPI, OddsPapi, Football Prediction, Today Prediction, Sportsbook
-- **Autenticação:** Manus OAuth
+- **Autenticação:** sessão local por nome e e-mail
 - **Hospedagem:** Netlify (frontend) + Node.js (backend)
 
 ### Estratégia de Cache Server-Side
@@ -113,7 +113,7 @@ Retornar ao Frontend
 - ✅ Chave RapidAPI armazenada apenas no servidor (nunca exposta)
 - ✅ RLS (Row Level Security) no Supabase para isolamento de dados
 - ✅ Validação e sanitização de todas as entradas
-- ✅ Autenticação via Manus OAuth
+- ✅ Autenticação local independente de plataforma
 - ✅ Conformidade LGPD completa
 - ✅ Proteção contra CSRF e XSS
 
@@ -143,7 +143,7 @@ RAPIDAPI_KEY=seu-rapidapi-key
 GEMINI_API_KEY=seu-gemini-key
 DATABASE_URL=sua-database-url
 JWT_SECRET=seu-jwt-secret
-VITE_APP_ID=seu-app-id
+ADMIN_EMAIL=admin@exemplo.com
 ```
 
 ### Cache TTL Configurável

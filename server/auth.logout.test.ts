@@ -18,7 +18,7 @@ function createAuthContext(): { ctx: TrpcContext; clearedCookies: CookieCall[] }
     openId: "sample-user",
     email: "sample@example.com",
     name: "Sample User",
-    loginMethod: "manus",
+    loginMethod: "local",
     role: "user",
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -57,6 +57,19 @@ describe("auth.logout", () => {
       sameSite: "none",
       httpOnly: true,
       path: "/",
+    });
+  });
+
+  it("uses a browser-compatible cookie policy on local HTTP", async () => {
+    const { ctx, clearedCookies } = createAuthContext();
+    ctx.req.protocol = "http";
+    const caller = appRouter.createCaller(ctx);
+
+    await caller.auth.logout();
+
+    expect(clearedCookies[0]?.options).toMatchObject({
+      secure: false,
+      sameSite: "lax",
     });
   });
 });

@@ -53,12 +53,10 @@ DATABASE_URL=postgresql://user:password@host:port/database
 
 # Authentication
 JWT_SECRET=seu-jwt-secret-muito-seguro-aqui
-VITE_APP_ID=seu-app-id-manus
-OAUTH_SERVER_URL=https://api.manus.im
-VITE_OAUTH_PORTAL_URL=https://oauth.manus.im
+ADMIN_EMAIL=admin@exemplo.com
 
 # APIs Externas
-RAPIDAPI_KEY=4012fbe2c8mshb6181176c3e7f21p1909ddjsnc91b540bb8f1
+RAPIDAPI_KEY=sua_chave_rapidapi
 GEMINI_API_KEY=sua-gemini-api-key-aqui
 
 # Cache TTL (em segundos)
@@ -72,18 +70,11 @@ CACHE_TTL_TEAM_INFO=86400
 
 # Owner Info
 OWNER_NAME=seu-nome
-OWNER_OPEN_ID=seu-open-id-manus
-
-# Manus Built-in APIs
-BUILT_IN_FORGE_API_URL=https://api.manus.im/forge
-BUILT_IN_FORGE_API_KEY=sua-chave-forge-aqui
-
-# Frontend URLs
-VITE_FRONTEND_FORGE_API_URL=https://api.manus.im/forge
-VITE_FRONTEND_FORGE_API_KEY=sua-chave-frontend-aqui
+# Google Maps (frontend)
+VITE_GOOGLE_MAPS_API_KEY=sua-chave-google-maps
 
 # Analytics
-VITE_ANALYTICS_ENDPOINT=https://analytics.manus.im
+VITE_ANALYTICS_ENDPOINT=https://analytics.example.com
 VITE_ANALYTICS_WEBSITE_ID=seu-website-id
 ```
 

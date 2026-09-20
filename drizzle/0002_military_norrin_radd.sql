@@ -1,0 +1,1 @@
+ALTER TABLE `api_cache` MODIFY COLUMN `source` enum('rapidapi','gemini','sofascore','betminer');

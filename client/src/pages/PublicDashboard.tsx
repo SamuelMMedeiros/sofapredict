@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Menu, X, LogIn, ArrowLeft } from "lucide-react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import SurebetCalculator from "@/components/SurebetCalculator";
 import TacticalRadar from "@/components/TacticalRadar";
 import AIRecommendationGenerator from "@/components/AIRecommendationGenerator";
@@ -18,6 +18,7 @@ import { MatchesGridSkeleton } from "@/components/LoadingSkeletons";
 import { trpc } from "@/lib/trpc";
 
 export default function PublicDashboard() {
+  const [, setLocation] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [filters, setFilters] = useState<MatchFiltersState>({
     league: "all",
@@ -43,6 +44,18 @@ export default function PublicDashboard() {
   const filteredMatches = useMatchFilters(matchesToDisplay, filters);
   const isLoading = sofaScoreLoading || loadingMatches;
 
+  const openMatch = (match: Match) => {
+    const search = new URLSearchParams({
+      home: match.homeTeam,
+      away: match.awayTeam,
+      league: match.league,
+      homeOdd: String(match.odds.home),
+      drawOdd: String(match.odds.draw),
+      awayOdd: String(match.odds.away),
+    });
+    setLocation(`/match/${encodeURIComponent(String(match.id))}?${search.toString()}`);
+  };
+
   return (
     <div className="min-h-screen bg-[#090d16]">
       {/* Header */}
@@ -60,7 +73,7 @@ export default function PublicDashboard() {
 
           <div className="hidden md:flex items-center gap-4">
             <span className="text-[#94a3b8] text-sm">Modo Exploração Gratuita</span>
-            <Link href="/pricing">
+            <Link href="/login">
               <Button className="bg-[#10b981] hover:bg-[#059669] text-white flex items-center gap-2">
                 <LogIn size={16} />
                 Fazer Login
@@ -80,7 +93,7 @@ export default function PublicDashboard() {
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-[#1e293b] p-4 space-y-3">
             <p className="text-[#94a3b8] text-sm">Modo Exploração Gratuita</p>
-            <Link href="/pricing" className="block">
+            <Link href="/login" className="block">
               <Button className="w-full bg-[#10b981] hover:bg-[#059669] text-white">
                 Fazer Login
               </Button>
@@ -98,14 +111,21 @@ export default function PublicDashboard() {
             Explore todos os recursos gratuitamente. Crie uma conta para salvar seus dados e acessar recursos premium.
           </p>
           <div className="flex gap-3">
-            <Link href="/pricing">
+            <Link href="/login">
               <Button className="bg-[#10b981] hover:bg-[#059669] text-white">
                 Criar Conta Gratuita
               </Button>
             </Link>
-            <Button variant="outline" className="border-[#10b981] text-[#10b981] hover:bg-[#10b981]/10 px-8">
-              Ver Planos Premium
-            </Button>
+            <Link href="/pricing">
+              <Button variant="outline" className="border-[#10b981] text-[#10b981] hover:bg-[#10b981]/10 px-8">
+                Ver Planos Premium
+              </Button>
+            </Link>
+            <Link href="/free-tools">
+              <Button variant="outline" className="border-[#10b981] text-[#10b981] hover:bg-[#10b981]/10 px-8">
+                30 Ferramentas Grátis
+              </Button>
+            </Link>
           </div>
         </div>
 
@@ -168,7 +188,19 @@ export default function PublicDashboard() {
             
             <div className="grid gap-4">
               {filteredMatches.map((match) => (
-                <Card key={match.id} className="bg-[#111827] border-[#1e293b]">
+                <Card
+                  key={match.id}
+                  className="cursor-pointer bg-[#111827] border-[#1e293b] transition hover:-translate-y-0.5 hover:border-[#10b981]/60"
+                  role="link"
+                  tabIndex={0}
+                  onClick={() => openMatch(match)}
+                  onKeyDown={event => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      openMatch(match);
+                    }
+                  }}
+                >
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
@@ -286,14 +318,16 @@ export default function PublicDashboard() {
             Crie uma conta gratuita para salvar suas análises, acompanhar histórico de apostas e acessar recursos premium.
           </p>
           <div className="flex gap-3 justify-center flex-wrap">
-            <Link href="/pricing">
+            <Link href="/login">
               <Button className="bg-[#10b981] hover:bg-[#059669] text-white px-8">
                 Criar Conta Gratuita
               </Button>
             </Link>
-            <Button variant="outline" className="border-[#10b981] text-[#10b981] hover:bg-[#10b981]/10 px-8">
-              Ver Planos Premium
-            </Button>
+            <Link href="/pricing">
+              <Button variant="outline" className="border-[#10b981] text-[#10b981] hover:bg-[#10b981]/10 px-8">
+                Ver Planos Premium
+              </Button>
+            </Link>
           </div>
         </div>
       </main>
