@@ -4,6 +4,7 @@ import { Link } from "wouter";
 import { ArrowLeft, LogIn, Zap, TrendingUp, Shield, Clock } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
+import { normalizeApiErrorMessage } from "@/lib/api-errors";
 import { useState } from "react";
 
 export default function LoginPage() {
@@ -174,9 +175,12 @@ export default function LoginPage() {
                     />
                   </label>
                   {loginMutation.error && (
-                    <p className="text-sm text-red-400">
-                      {loginMutation.error.message}
-                    </p>
+                    <div className="rounded-md border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-200">
+                      <p className="font-medium">Não foi possível criar sua conta agora.</p>
+                      <p className="mt-1 text-red-100/90">
+                        {normalizeApiErrorMessage(loginMutation.error)}
+                      </p>
+                    </div>
                   )}
                   <Button
                     type="submit"
